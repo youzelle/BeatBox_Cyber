@@ -2,13 +2,14 @@ package com.youzelle.beatbox;
 
 import com.youzelle.beatbox.instruments.Instruments;
 
-import javax.sound.midi.Sequence;
-import javax.sound.midi.Sequencer;
-import javax.sound.midi.Track;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+@Component
 public class Gui {
 
   JPanel mainPanel;
@@ -19,16 +20,8 @@ public class Gui {
   ArrayList<JCheckBox> checkboxList = new ArrayList<>();
 
   Instruments instruments;
-  Sequencer sequencer;
-  Sequence sequence;
-  Track track;
 
   public void build() {
-    SequenceEvents sequenceEvents = new SequenceEvents();
-    sequenceEvents.setUpMidi();
-    sequencer = sequenceEvents.getSequencer();
-    sequence = sequenceEvents.getSequence();
-    track = sequenceEvents.getTrack();
 
     instruments = new Instruments();
     instruments.setDefaultInstrumentNames();
@@ -38,8 +31,7 @@ public class Gui {
     background = new JPanel(layout);
     background.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-
-    ControlButtons controlButtons = new ControlButtons(sequencer, sequence, track, instruments, checkboxList);
+    ControlButtons controlButtons = new ControlButtons(instruments, checkboxList);
     controlButtons.setButtonBox();
     buttonBox = controlButtons.getButtonBox();
 

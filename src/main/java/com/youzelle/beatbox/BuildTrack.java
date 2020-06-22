@@ -1,34 +1,37 @@
 package com.youzelle.beatbox;
 
 import com.youzelle.beatbox.instruments.Instruments;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.youzelle.beatbox.MidiEventsService;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.sound.midi.*;
 import javax.swing.*;
 import java.util.ArrayList;
 
+@Component
 public class BuildTrack {
 
-  private Sequence sequence;
-  private Sequencer sequencer;
-  private Track track;
+  MidiEventsService midiEventsService;
+
   private Instruments instruments;
   private ArrayList<JCheckBox> checkboxList;
 
-  public BuildTrack(Sequencer sequencer, Sequence sequence, Track track, Instruments instruments, ArrayList<JCheckBox> checkboxList) {
-    this.sequence = sequence;
-    this.track = track;
+//  @Autowired
+  public BuildTrack(MidiEventsService midiEventsService, Instruments instruments, ArrayList<JCheckBox> checkboxList) {
     this.instruments = instruments;
     this.checkboxList = checkboxList;
-    this.sequencer = sequencer;
+    this.midiEventsService = midiEventsService;
   }
-
 
   public void create() {
     int[] trackList;
-
-    sequence.deleteTrack(track);
-    track = sequence.createTrack();
-    System.out.println("createTrack");
+    System.out.println("MIDISERVICE ----------------" + midiEventsService);
+    midiEventsService.getBBSequence().deleteTrack(midiEventsService.getBBTrack());
+    midiEventsService.setBBTrack(midiEventsService.getBBSequence().createTrack());
 
     for (int i = 0; i < 16; i++) {
       trackList = new int[16];
@@ -44,13 +47,13 @@ public class BuildTrack {
       }
 
       makeTracks(trackList);
-      track.add(makeEvent(176, 1, 127, 0, 16));
+      midiEventsService.getBBTrack().add(makeEvent(176, 1, 127, 0, 16));
 
       try {
-        sequencer.setSequence(sequence);
-        sequencer.setLoopCount(sequencer.LOOP_CONTINUOUSLY);
-        sequencer.start();
-        sequencer.setTempoInBPM(120);
+        midiEventsService.getBBSequencer().setSequence(midiEventsService.getBBSequence());
+        midiEventsService.getBBSequencer().setLoopCount(midiEventsService.getBBSequencer().LOOP_CONTINUOUSLY);
+        midiEventsService.getBBSequencer().start();
+        midiEventsService.getBBSequencer().setTempoInBPM(120);
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -61,8 +64,8 @@ public class BuildTrack {
     for (int i = 0; i < 16; i++) {
       int key = list[i];
       if (key !=0 ) {
-        track.add(makeEvent(144, 9, key, 100, i));
-        track.add(makeEvent(128, 9, key, 100, i + 1));
+        midiEventsService.getBBTrack().add(makeEvent(144, 9, key, 100, i));
+        midiEventsService.getBBTrack().add(makeEvent(128, 9, key, 100, i + 1));
       }
     }
   }

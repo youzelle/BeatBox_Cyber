@@ -1,7 +1,10 @@
 package com.youzelle.beatbox.instruments;
 
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 
+@Component
 public class Instruments {
 
   private ArrayList<String> instrumentNames = new ArrayList<String>();
